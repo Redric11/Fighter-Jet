@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fighter Jet Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Fighter jet properties
+        const jetWidth = 50;
+        const jetHeight = 50;
+        let jetX = canvas.width / 2 - jetWidth / 2;
+        const jetY = canvas.height - jetHeight;
+        const jetSpeed = 5;
+
+        // Enemy fighter jet properties
+        const enemyWidth = 40;
+        const enemyHeight = 40;
+        let enemyX = Math.random() * (canvas.width - enemyWidth);
+        let enemyY = 0;
+        const enemySpeed = 2;
+
+        // Key states
+        const keys = {};
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+        });
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        function drawJet() {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(jetX, jetY, jetWidth, jetHeight);
+        }
+
+        function drawEnemy() {
+            ctx.fillStyle = 'red';
+            ctx.fillRect(enemyX, enemyY, enemyWidth, enemyHeight);
+        }
+
+        function update() {
+            if (keys['ArrowLeft'] && jetX > 0) {
+                jetX -= jetSpeed;
+            }
+            if (keys['ArrowRight'] && jetX < canvas.width - jetWidth) {
+                jetX += jetSpeed;
+            }
+
+            enemyY += enemySpeed;
+            if (enemyY > canvas.height) {
+                enemyX = Math.random() * (canvas.width - enemyWidth);
+                enemyY = 0;
+            }
+
+            // Collision detection
+            if (
+                jetX < enemyX + enemyWidth &&
+                jetX + jetWidth > enemyX &&
+                jetY < enemyY + enemyHeight &&
+                jetY + jetHeight > enemyY
+            ) {
+                alert('Game Over! You were shot down by an enemy fighter jet.');
+                document.location.reload();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawJet();
+            drawEnemy();
+        }
+
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
